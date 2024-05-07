@@ -173,14 +173,30 @@ def extract_text_from_messages(messages):
     return " ".join(texts)
 
 
+
 @app.post("/message/")
 async def reply(Body: str = Form(), From: str = Form()):
     normalized_phone = From.lstrip("+").replace("-", "").replace(" ", "")
     user_doc_ref = db.collection('whatsapp_conversations').document(normalized_phone)
     doc = user_doc_ref.get()
 
+    # Initialize interactions if the user is new
     if not doc.exists:
-        user_doc_ref.set({'interactions': []})
+        user_doc_ref.set({'interactions': [], 'limit_reached_notified': False})
+        interactions = []
+        limit_reached_notified = False
+    else:
+        interactions = doc.to_dict().get('interactions', [])
+        limit_reached_notified = doc.to_dict().get('limit_reached_notified', False)
+
+    # Check the number of interactions and limit responses if necessary
+    if len(interactions) >= 30:
+        if not limit_reached_notified:
+            # Send a message that the interaction limit has been reached
+            send_message(From, "You have reached your interaction limit with AOI. Please contact AOI for further assistance.")
+            # Update the Firestore document to mark that the notification has been sent
+            user_doc_ref.update({'limit_reached_notified': True})
+        return Response(status_code=200)
 
     # Create a thread for the user if it does not exist
     thread = client.beta.threads.create()
@@ -190,7 +206,6 @@ async def reply(Body: str = Form(), From: str = Form()):
         thread_id=thread.id,
         role="user",
         content=Body
-        
     )
 
     # Save the user's message to Firestore
@@ -203,8 +218,6 @@ async def reply(Body: str = Form(), From: str = Form()):
         thread_id=thread.id,
         assistant_id=assistant_id,
         instructions=instructions
-        #instructions="refer to the user as EMRE TURAN"
-
     )
 
     # Check if the run is completed and then list the messages
