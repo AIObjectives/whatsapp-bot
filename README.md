@@ -1,39 +1,47 @@
+
+
+<p align="center">
+   <img src="https://github.com/explomind1/twiliowhatsappbot/blob/main/d_SuSxWXmC.svg" />
+</p>
+
 # WhatsApp Survey Bot for AI Objectives Institute (AOI)
 
-This repository contains the code for a WhatsApp survey bot developed using FastAPI, Firebase, Twilio, and OpenAI. The bot is designed to conduct structured surveys with users over WhatsApp, gathering insights on community and personal issues in a conversational and engaging manner.
+This repository contains the advanced codebase for a WhatsApp survey bot, leveraging FastAPI, Firebase, Twilio, and OpenAI. The bot is expertly designed to conduct structured and engaging surveys over WhatsApp, collecting valuable insights on community and personal issues directly from users.
 
-## Features
+## Key Features
 
-- **Firebase Integration**: Stores user interaction history and manages session data.
-- **Twilio WhatsApp API**: Handles sending and receiving WhatsApp messages.
-- **OpenAI API**: Powers the conversational AI, ensuring responses are engaging and contextually relevant.
-- **FastAPI**: Provides a robust and scalable backend framework.
+- **Firebase Integration**: Manages user interaction history and session data effectively.
+- **Twilio WhatsApp API**: Enables robust sending and receiving of WhatsApp messages.
+- **OpenAI API**: Utilizes cutting-edge AI to deliver engaging, contextually appropriate responses.
+- **FastAPI Framework**: Offers a scalable and efficient backend, ideal for real-time applications.
 
 ## Setup and Installation
 
 ### Prerequisites
 
-- Python 3.8 or higher
-- Firebase account and a service account key
-- Twilio account with a WhatsApp-enabled number
-- OpenAI API key/assistant
+- Python 3.8+
+- Firebase account with a service account key
+- Twilio account with WhatsApp capabilities
+- OpenAI API key
+- ngrok or localtunnel account for local testing
+- Heroku account for deployment
 
 ### Installation Steps
 
 1. **Clone the repository**:
-   ```
+   ```bash
    git clone https://github.com/yourusername/whatsapp-survey-bot.git
    cd whatsapp-survey-bot
    ```
 
 2. **Install dependencies**:
-   ```
-   pip install fastapi uvicorn firebase-admin openai python-decouple twilio
+   ```bash
+   pip install -r requirements.txt
    ```
 
-3. **Setup environment variables**:
-   Create a `.env` file in the root directory and fill in your credentials:
-   ```
+3. **Set up environment variables**:
+   Create a `.env` file in the project root with the following:
+   ```plaintext
    OPENAI_API_KEY='Your OpenAI API Key'
    TWILIO_ACCOUNT_SID='Your Twilio Account SID'
    TWILIO_AUTH_TOKEN='Your Twilio Auth Token'
@@ -41,33 +49,69 @@ This repository contains the code for a WhatsApp survey bot developed using Fast
    GOOGLE_APPLICATION_CREDENTIALS='Path to your Firebase admin SDK JSON file'
    ```
 
-4. **Run the server**:
-   ```
-   uvicorn AOI_bot_customgpt:app --reload
+4. **Run the server locally**:
+   ```bash
+   uvicorn yourmainfilename:app --reload
    ```
 
-5. **Expose it to the world**:
+### Local Testing
+
+To test the application locally, expose your local server to the internet using either ngrok or localtunnel:
+
+- **Using ngrok**:
+  ```bash
+  ngrok http 8000
+  ```
+  This will provide you with a public URL that you can use in Twilio's WhatsApp webhook settings.
+
+- **Using localtunnel**:
+  ```bash
+  npx localtunnel --port 8000
+  ```
+  Similar to ngrok, this will provide a public URL to use with Twilio.
+
+Update the webhook URL in your Twilio dashboard to point to the URL provided by ngrok or localtunnel.
+
+### Deployment to Heroku
+
+1. **Create a Heroku app**:
+   ```bash
+   heroku create your-app-name
    ```
-   Use localtunnel or Ngrok to test it locally and add the link to Twilio as POST request.
+
+2. **Add buildpacks**:
+   ```bash
+   heroku buildpacks:set heroku/python
    ```
+
+3. **Set environment variables on Heroku**:
+   ```bash
+   heroku config:set OPENAI_API_KEY='Your OpenAI API Key'
+   heroku config:set TWILIO_ACCOUNT_SID='Your Twilio Account SID'
+   heroku config:set TWILIO_AUTH_TOKEN='Your Twilio Auth Token'
+   heroku config:set TWILIO_NUMBER='Your Twilio WhatsApp Number'
+   ```
+
+4. **Deploy your application**:
+   ```bash
+   git push heroku master
+   ```
+
+5. **Update Twilio's webhook URL to point to your Heroku app**.
 
 ## Usage
 
-Send a WhatsApp message to the configured Twilio number to begin interacting with the survey bot. The bot will guide you through a series of questions, maintaining a conversational and friendly tone.
+Begin by sending a WhatsApp message to the configured Twilio number. The bot will engage you in a conversation, guiding you through a series of structured questions to gather insights.
 
-## Bot Interaction Flow
+## Interaction Flow
 
-1. **Welcome Message**: Greet users and ask for consent to participate in the survey.
-2. **Survey Questions**: Sequentially ask predefined questions, ensuring clarity and focus.
-3. **Response Handling**: Dynamically handle user responses, acknowledging input and prompting further discussion as needed.
-4. **Closure**: Politely conclude the survey once all questions are answered or the user decides to exit.
+- **Initial Greeting**: Warmly welcomes users and seeks consent for participation.
+- **Conducting the Survey**: Methodically presents questions, maintaining clarity and focus throughout.
+- **Dynamic Response Handling**: Adaptively manages user responses, prompting further discussion where necessary.
+- **Conclusion**: Graciously concludes the interaction after all questions are addressed.
 
 ## Advanced Features
 
-- **Contextual Continuity**: Maintain conversation context effectively even with minimal user responses.
-- **Adaptive Response Management**: Handle diverse user inputs intelligently, ensuring the conversation stays on track.
-- **Exception Handling**: Robustly handle unexpected or off-topic responses without breaking the flow.
-
-
-
-
+- **Contextual Continuity**: Keeps track of conversation context effectively, even with brief user responses.
+- **Adaptive Response Management**: Smartly adjusts to varied user inputs to keep discussions on track.
+- **Exception Handling**: Expertly handles unexpected inputs or deviations without disrupting the conversation flow.
