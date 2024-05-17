@@ -1,0 +1,16 @@
+firebase-admin
+fastapi
+uvicorn
+python-decouple
+twilio
+python-dotenv
+requests
+openai
+python-multipart
+pydub
+
+
+
+
+
+

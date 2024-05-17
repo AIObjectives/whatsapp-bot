@@ -5,9 +5,13 @@ from openai import OpenAI
 from decouple import config
 import logging
 from twilio.rest import Client as TwilioClient
+import json
+import os
+
 
 # Firebase Initialization
-cred = credentials.Certificate('...')
+firebase_credentials = json.loads(os.environ.get('FIREBASE_CREDENTIALS'))
+cred = credentials.Certificate(firebase_credentials)
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
@@ -17,7 +21,9 @@ app = FastAPI()
 # OpenAI Configuration
 OpenAI.api_key = config("OPENAI_API_KEY")
 client = OpenAI(api_key=OpenAI.api_key)
-assistant_id = "..."  # Your existing assistant ID
+#assistant_id = "asst_oxQinJe5sKixyRh1HHsy8yqo" ## 
+assistant_id = "..." ## 
+
 
 # Twilio Configuration
 twilio_account_sid = config("TWILIO_ACCOUNT_SID")
@@ -30,7 +36,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-
+#instructions = """ act like you are a dog"""
 
 instructions="""
 
@@ -91,61 +97,8 @@ This detailed framework ensures that the AOI bot effectively fulfills its role, 
 """
 
 
-# instructions = """
-
-# ### WhatsApp Bot Instructions for AI Objectives Institute (AOI)
-
-# #### Bot Objective and Personality
-# The AOI bot is designed to engage users in a structured survey interaction, collecting insights on community and personal issues. It aims to be friendly, approachable, and occasionally humorous to encourage open and comfortable sharing from users.
-
-# #### Initial Interaction
-# - **Welcome Message:** "Welcome to the AI Objectives Institute (AOI)! We're excited to learn from your experiences. Are you ready to answer a few questions about key issues in your community?"
-# - **User Consent:** The bot requests user consent to proceed. Positive responses like "yes", "sure", "okay", "let's go", "alright", "bring it on", etc., lead to the survey initiation. If declined, the bot ends the conversation politely.
-
-# #### Survey Interaction
-# - **Question Flow:** The bot presents five survey questions one at a time:
-#   1. "What is the most pressing issue in your community that you believe should be addressed?"
-#   2. "Can you suggest a practical initiative that would improve your community in the coming months?"
-#   3. "What is the biggest challenge you face daily that could be better addressed by technology or community services?"
-#   4. "Can you describe a recent experience where you felt well supported by your community or a service?"
-#   5. "Looking ahead, what one change do you think would significantly improve your quality of life or work?"
-  
-# - **Handling Responses:** After each response, the bot acknowledges with a comment like, "That sounds quite challenging!" and asks if the user wants to elaborate. If not, it proceeds to the next question.
-
-# #### Structured Transition Between Survey Questions
-# - **Seamless Question Transitions:** The bot smoothly transitions between questions to maintain flow, saying, "Let's continue to the next important topic..." before presenting the next question.
-# - **Guided Conversation Flow:** The bot explicitly informs the user about moving to the next topic to keep the user engaged and aware of the transition.
-
-# #### Dynamic Question Tracking and Management
-# - **Survey Question Tracking:** The bot keeps a dynamic record of all posed questions and responses to ensure each question is only asked once and to avoid repetition.
-# - **Intelligent Redirection:** If a user's responses start drifting, the bot gently guides the conversation back to the survey questions using prompts like, "I appreciate your input, but let's focus on another important area. Regarding our survey, I'd like to ask you about..."
-
-# #### Adaptive Response Management
-# - **Contextual Continuity:** The bot maintains continuity by responding contextually within the survey's scope. For brief answers, it probes deeper without restarting the conversation.
-# - **Preventing Redundant Restarts:** The bot avoids unnecessary restarts by following up with specific questions related to the survey rather than generic prompts.
-
-# #### Enhanced Understanding and Fallback Responses
-# - **Improved Clarity in Responses:** The bot differentiates between clear and unclear responses, engaging further for elaboration when needed.
-# - **Fallback Strategy for Ambiguous Replies:** The bot uses fallback questions like, "Could you elaborate a bit more on that?" to clarify and continue the survey.
-
-# #### Exception Handling in Conversation Flow
-# - **Robust Response Recognition:** Advanced recognition ensures the bot interprets readiness to move to the next question correctly, preventing disruptions in the survey flow.
-# - **Clarification Requests:** If unfamiliar responses are encountered, the bot seeks clarification rather than restarting, ensuring the conversation remains on track.
-
-# #### Maintaining Focus and Redirecting Conversation
-# - **Limiting Off-Topic Digressions:** The bot limits digressions to ensure the conversation remains focused on the survey's objectives.
-# - **Guiding Back to Script:** If digressions occur, the bot redirects back to the survey, maintaining the integrity and focus of the survey interaction.
-
-# #### Closure of Interaction
-# - **Conclusion:** After all questions are addressed or the user wishes to end the conversation, the bot thanks the user with, "Thank you for sharing your thoughts! Your input is invaluable to us at AOI. Have a great day!"
-
-# #### Overall Conversation Management
-# The bot manages conversational flow, recognizing various responses and adapting to user moods. It avoids unsolicited questions or deviations from the script, focusing on the survey to ensure data integrity and user satisfaction.
-
-# """
 
 
-## the bot shodul keep track of questions asked and the responses given by the usera nd make sure to not ask the same question
 def send_message(to_number, body_text):
     """Send a WhatsApp message via Twilio"""
     if not to_number.startswith('whatsapp:'):
@@ -173,54 +126,79 @@ def extract_text_from_messages(messages):
     return " ".join(texts)
 
 
+from fastapi import HTTPException, Response, Form, UploadFile, File
+from uuid import uuid4
+import os
+import requests
+import io
+from pydub import AudioSegment
+from requests.auth import HTTPBasicAuth
+
+
 
 @app.post("/message/")
-async def reply(Body: str = Form(), From: str = Form()):
+async def reply(Body: str = Form(default=None), From: str = Form(), MediaUrl0: str = Form(default=None)):
+    logger.info(f"Received message from {From} with body {Body} and media URL {MediaUrl0}")
     normalized_phone = From.lstrip("+").replace("-", "").replace(" ", "")
     user_doc_ref = db.collection('whatsapp_conversations').document(normalized_phone)
     doc = user_doc_ref.get()
 
-    # Initialize interactions if the user is new
     if not doc.exists:
         user_doc_ref.set({'interactions': [], 'limit_reached_notified': False})
         interactions = []
-        limit_reached_notified = False
     else:
         interactions = doc.to_dict().get('interactions', [])
         limit_reached_notified = doc.to_dict().get('limit_reached_notified', False)
 
-    # Check the number of interactions and limit responses if necessary
-    if len(interactions) >= 30:
-        if not limit_reached_notified:
-            # Send a message that the interaction limit has been reached
-            send_message(From, "You have reached your interaction limit with AOI. Please contact AOI for further assistance.")
-            # Update the Firestore document to mark that the notification has been sent
-            user_doc_ref.update({'limit_reached_notified': True})
+    if len(interactions) >= 30 and not limit_reached_notified:
+        send_message(From, "You have reached your interaction limit with AOI. Please contact AOI for further assistance.")
+        user_doc_ref.update({'limit_reached_notified': True})
         return Response(status_code=200)
 
-    # Create a thread for the user if it does not exist
-    thread = client.beta.threads.create()
+    if MediaUrl0:
+        response = requests.get(MediaUrl0, auth=HTTPBasicAuth(twilio_account_sid, twilio_auth_token))
+        content_type = response.headers['Content-Type']
+        logger.info(f"Content-Type of received media: {content_type}")
 
-    # Add the WhatsApp message to the OpenAI thread and to Firestore
+        if 'audio' in content_type:
+            audio_stream = io.BytesIO(response.content)
+            audio_stream.name = 'file.ogg'  # Assume the file is in OGG format
+            logger.info("Attempting to transcribe audio")
+            try:
+                transcription_result = client.audio.transcriptions.create(
+                    model="whisper-1", 
+                    file=audio_stream
+                )
+                Body = transcription_result.text
+                logger.info(f"Transcription result: {Body}")
+            except Exception as e:
+                logger.error(f"Error in transcription: {str(e)}")
+                return Response(status_code=500, content=str(e))
+        else:
+            logger.error("Received media is not an audio file. Response content: " + response.text)
+            return Response(status_code=400, content="Unsupported media type.")
+
+    if not Body:
+        logger.error("No text to process after transcription.")
+        return Response(status_code=400)
+
+    thread = client.beta.threads.create()
     message = client.beta.threads.messages.create(
         thread_id=thread.id,
         role="user",
         content=Body
     )
 
-    # Save the user's message to Firestore
     user_doc_ref.update({
         'interactions': firestore.ArrayUnion([{'message': Body}])
     })
 
-    # Create a run using the existing Assistant
     run = client.beta.threads.runs.create_and_poll(
         thread_id=thread.id,
         assistant_id=assistant_id,
         instructions=instructions
     )
 
-    # Check if the run is completed and then list the messages
     if run.status == 'completed':
         messages = client.beta.threads.messages.list(thread_id=thread.id)
         assistant_response = extract_text_from_messages(messages)
@@ -229,8 +207,7 @@ async def reply(Body: str = Form(), From: str = Form()):
             'interactions': firestore.ArrayUnion([{'response': assistant_response}])
         })
     else:
+        logger.error("Failed to complete processing: " + run.status)
         send_message(From, "There was an issue processing your request.")
-        print(run.status)
 
     return Response(status_code=200)
-
