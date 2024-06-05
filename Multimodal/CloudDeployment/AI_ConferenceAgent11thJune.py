@@ -21,8 +21,8 @@ app = FastAPI()
 # # OpenAI Configuration
 # OpenAI.api_key = config("OPENAI_API_KEY")
 # client = OpenAI(api_key=OpenAI.api_key)
-# #assistant_id = "asst_oxQinJe5sKixyRh1HHsy8yqo" ## EMRE
-# assistant_id = "asst_XNN9S1LK9EvUG2533xkvKoZh" ## AOI
+
+
 
 
 # # Twilio Configuration
@@ -43,9 +43,8 @@ app = FastAPI()
 # OpenAI Configuration
 OpenAI.api_key = config("OPENAI_API_KEY")
 client = OpenAI(api_key=OpenAI.api_key)
-#assistant_id = "asst_oxQinJe5sKixyRh1HHsy8yqo" ## EMRE
-#assistant_id = "asst_XNN9S1LK9EvUG2533xkvKoZh" ## AOI for general whatsapp
-assistant_id = "asst_Hd2y8q4VdTz9j07zA8m3vW85" ## AOI for AI conference/ gpt-4o shoudl be much cheaper!
+
+assistant_id = ".." ## AOI for AI conference/ gpt-4o shoudl be much cheaper!
 
 
 
