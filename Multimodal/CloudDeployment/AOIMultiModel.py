@@ -21,7 +21,7 @@ app = FastAPI()
 # OpenAI Configuration
 OpenAI.api_key = config("OPENAI_API_KEY")
 client = OpenAI(api_key=OpenAI.api_key)
-#assistant_id = "asst_oxQinJe5sKixyRh1HHsy8yqo" ## EMRE
+#assistant_id = "..." ## EMRE
 assistant_id = "..." ## AOI
 
 
