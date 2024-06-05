@@ -27,8 +27,8 @@ app = FastAPI()
 # OpenAI Configuration
 OpenAI.api_key = config("OPENAI_API_KEY")
 client = OpenAI(api_key=OpenAI.api_key)
-#assistant_id = "asst_oxQinJe5sKixyRh1HHsy8yqo" ## EMRE
-assistant_id = "asst_XNN9S1LK9EvUG2533xkvKoZh" ## AOI
+
+assistant_id = "..." ## AOI
 
 
 # Twilio Configuration
@@ -42,7 +42,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-#instructions = """ act like you are a dog"""
+
 
 instructions="""
 
