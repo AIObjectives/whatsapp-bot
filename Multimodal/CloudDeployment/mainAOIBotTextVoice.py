@@ -21,7 +21,7 @@ app = FastAPI()
 # OpenAI Configuration
 OpenAI.api_key = config("OPENAI_API_KEY")
 client = OpenAI(api_key=OpenAI.api_key)
-#assistant_id = "asst_oxQinJe5sKixyRh1HHsy8yqo" ## 
+#assistant_id = "..." ## 
 assistant_id = "..." ## 
 
 
@@ -36,7 +36,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-#instructions = """ act like you are a dog"""
+
 
 instructions="""
 
