@@ -1,7 +1,7 @@
 #web: uvicorn mainAOIBotTextVoice:app --host=0.0.0.0 --port=${PORT:-5000}
 
 # web: uvicorn mainAOIBotTextVoice:app --host=0.0.0.0 --port=${PORT:-5000}
-# web: uvicorn mainAOIBotTextVoice:app --host=0.0.0.0 --port=${PORT:-5000} --workers 6
-# web: uvicorn AI_ConferenceAgent11thJune:app --host=0.0.0.0 --port=${PORT:-5000} --workers 3
+# web: uvicorn mainAOIBotTextVoice:app --host=0.0.0.0 --port=${PORT:-5000} --workers 6 # 6 is too much!
+# web: uvicorn XXX:app --host=0.0.0.0 --port=${PORT:-5000} --workers 3
 
-web: uvicorn 26thconference1:app --host=0.0.0.0 --port=${PORT:-5000} --workers 3
+web: uvicorn XXX:app --host=0.0.0.0 --port=${PORT:-5000} --workers 3
