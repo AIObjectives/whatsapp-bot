@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Objectives Institute - Secure Access</title>
+    <style>
+        /* Reset and Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: radial-gradient(circle at top, #1e2a47, #0d0f1a);
+            overflow: hidden;
+            position: relative;
+            color: #f4f4f9;
+        }
+
+        /* Galaxy Rain Canvas */
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+
+        /* Login Box */
+        .login-container {
+            width: 100%;
+            max-width: 450px;
+            padding: 50px 40px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+            text-align: center;
+            backdrop-filter: blur(12px);
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-container h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            color: #ffffff;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        .login-container p {
+            font-size: 1em;
+            color: #d1d1e0;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.85em;
+            color: #c9c9df;
+            text-align: left;
+            margin-bottom: 8px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 1em;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: #5a8dee;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background-color: #5a8dee;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .login-btn:hover {
+            background-color: #4a78d3;
+            transform: translateY(-2px);
+        }
+
+        .footer-note {
+            font-size: 0.75em;
+            color: #a6a6cc;
+            margin-top: 25px;
+            opacity: 0.9;
+        }
+    </style>
+
+    <script>
+        // JavaScript to show pop-up alert for success or error messages
+        window.onload = function() {
+            const errorMessage = "{{ error_message | safe }}";
+            const successMessage = "{{ success_message | safe }}";
+            if (errorMessage) {
+                alert(errorMessage);
+            } else if (successMessage) {
+                alert(successMessage);
+            }
+        }
+    </script>
+</head>
+<body>
+
+    <!-- Galaxy Rain Background with Canvas -->
+    <canvas id="galaxyCanvas"></canvas>
+
+    <div class="login-container">
+        <h1>AI Objectives Institute</h1>
+        <p>Secure access to exclusive insights and resources</p>
+        
+        <form action="/submit" method="post">
+            <div class="input-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="input-group">
+                <label for="username">Conference</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="login-btn">Log In</button>
+        </form>
+
+        <div class="footer-note">
+            Authorized access only. Please enter your credentials.
+        </div>
+    </div>
+
+    <!-- JavaScript for Galaxy Rain Background Effect -->
+    <script>
+        const canvas = document.getElementById('galaxyCanvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Star particles
+        const stars = [];
+        const numStars = 200;
+
+        // Generate random stars
+        function createStars() {
+            for (let i = 0; i < numStars; i++) {
+                stars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    radius: Math.random() * 1.5 + 0.5,
+                    speed: Math.random() * 0.5 + 0.2,
+                    opacity: Math.random() * 0.8 + 0.2,
+                });
+            }
+        }
+
+        function drawStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            stars.forEach(star => {
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
+                ctx.fill();
+                star.y += star.speed;
+
+                // Loop star back to top if it falls off screen
+                if (star.y > canvas.height) {
+                    star.y = -star.radius;
+                }
+            });
+        }
+
+        // Make stars respond to mouse movement for a "depth" effect
+        document.addEventListener('mousemove', event => {
+            stars.forEach(star => {
+                const dx = event.clientX - star.x;
+                const dy = event.clientY - star.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                const maxDist = 200;
+                if (dist < maxDist) {
+                    const factor = (maxDist - dist) / maxDist;
+                    star.x += dx * factor * 0.01;
+                    star.y += dy * factor * 0.01;
+                }
+            });
+        });
+
+        function animate() {
+            drawStars();
+            requestAnimationFrame(animate);
+        }
+
+        createStars();
+        animate();
+
+        // Adjust canvas size on window resize
+        window.addEventListener("resize", () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            stars.length = 0;
+            createStars();
+        });
+    </script>
+</body>
+</html>
