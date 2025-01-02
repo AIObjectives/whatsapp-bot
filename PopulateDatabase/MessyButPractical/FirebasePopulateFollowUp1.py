@@ -9,7 +9,7 @@ from fastapi import FastAPI, Form, Response
 import logging
 from uuid import uuid4
 
-cred = credentials.Certificate('/Users/emreturan/Desktop/firebase/aoiwhatsappbot-firebase-adminsdk-rki5n-9526831994.json')
+cred = credentials.Certificate('xxx.json')
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
