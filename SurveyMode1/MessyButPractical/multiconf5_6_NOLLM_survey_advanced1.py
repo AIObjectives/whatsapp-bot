@@ -491,15 +491,13 @@ async def reply(Body: str = Form(...), From: str = Form(...), MediaUrl0: str = F
                 participant_name = data.get('name', None)
 
             if awaiting_name:
-                #send_message(From, f"""Hello! Welcome to the Utopia Network survey. Thank you for agreeing to participate. We want to assure you that none of the data you provide will be able to be directly linked back to you. Your identity is protected through secure and encrypted links. How would you like to be addressed during this session (please feel free to use your own name, or another name).""")
 
-                #send_message(From, f"""Thank you for agreeing to participate. We want to assure you that none of the data you provide will be able to be directly linked back to you. Your identity is protected through secure and encrypted links. How would you like to be addressed during this session? (Please feel free to use your own name, or another name.)""")
 
                 # Fetch 'initial_message' from Firebase
                 # Define default messages
                 default_initial_message = """Thank you for agreeing to participate. We want to assure you that none of the data you provide will be directly linked back to you. Your identity is protected through secure and encrypted links. How would you like to be addressed during this session? (Please feel free to use your own name, or another name.)"""
 
-                default_completion_message = """Congratulations, you’ve completed the survey! Thank you so much for taking the time to share your experiences. Your input will help Utopia Network Kenya create programs and advocate for meaningful change. If you have any questions, concerns, or feedback, please don’t hesitate to contact us. Your voice matters, and we deeply appreciate your participation."""
+                default_completion_message = """Congratulations, you’ve completed the survey! Thank you so much for taking the time to share your experiences. Your input will help XXX create programs and advocate for meaningful change. If you have any questions, concerns, or feedback, please don’t hesitate to contact us. Your voice matters, and we deeply appreciate your participation."""
 
                 event_info_ref = db.collection(f'AOI_{current_event_id}').document('info')
                 event_info_doc = event_info_ref.get()
@@ -514,12 +512,10 @@ async def reply(Body: str = Form(...), From: str = Form(...), MediaUrl0: str = F
 
 
             else:
-                #send_message(From, f"""Hello! Welcome to the Utopia Network survey. Thank you for agreeing to participate. We want to assure you that none of the data you provide will be able to be directly linked back to you. Your identity is protected through secure and encrypted links. How would you like to be addressed during this session (please feel free to use your own name, or another name).""")
                 
-                #send_message(From, f"""Thank you for agreeing to participate. We want to assure you that none of the data you provide will be able to be directly linked back to you. Your identity is protected through secure and encrypted links. How would you like to be addressed during this session? (Please feel free to use your own name, or another name.)""")
                 default_initial_message = """Thank you for agreeing to participate. We want to assure you that none of the data you provide will be directly linked back to you. Your identity is protected through secure and encrypted links. How would you like to be addressed during this session? (Please feel free to use your own name, or another name.)"""
 
-                default_completion_message = """Congratulations, you’ve completed the survey! Thank you so much for taking the time to share your experiences. Your input will help Utopia Network Kenya create programs and advocate for meaningful change. If you have any questions, concerns, or feedback, please don’t hesitate to contact us. Your voice matters, and we deeply appreciate your participation."""
+                default_completion_message = """Congratulations, you’ve completed the survey! Thank you so much for taking the time to share your experiences. Your input will help XXX create programs and advocate for meaningful change. If you have any questions, concerns, or feedback, please don’t hesitate to contact us. Your voice matters, and we deeply appreciate your participation."""
 
                 event_info_ref = db.collection(f'AOI_{current_event_id}').document('info')
                 event_info_doc = event_info_ref.get()
@@ -945,11 +941,9 @@ async def reply(Body: str = Form(...), From: str = Form(...), MediaUrl0: str = F
                 participant_name = data.get('name', None)
 
             if awaiting_name:
-                #send_message(From, f"""Hello! Welcome to the Utopia Network survey. Thank you for agreeing to participate. We want to assure you that none of the data you provide will be able to be directly linked back to you. Your identity is protected through secure and encrypted links. How would you like to be addressed during this session (please feel free to use your own name, or another name).""")
-                #send_message(From, f"""Thank you for agreeing to participate. We want to assure you that none of the data you provide will be able to be directly linked back to you. Your identity is protected through secure and encrypted links. How would you like to be addressed during this session? (Please feel free to use your own name, or another name.)""")
                 default_initial_message = """Thank you for agreeing to participate. We want to assure you that none of the data you provide will be directly linked back to you. Your identity is protected through secure and encrypted links. How would you like to be addressed during this session? (Please feel free to use your own name, or another name.)"""
 
-                default_completion_message = """Congratulations, you’ve completed the survey! Thank you so much for taking the time to share your experiences. Your input will help Utopia Network Kenya create programs and advocate for meaningful change. If you have any questions, concerns, or feedback, please don’t hesitate to contact us. Your voice matters, and we deeply appreciate your participation."""
+                default_completion_message = """Congratulations, you’ve completed the survey! xxx."""
 
                 event_info_ref = db.collection(f'AOI_{current_event_id}').document('info')
                 event_info_doc = event_info_ref.get()
@@ -961,11 +955,9 @@ async def reply(Body: str = Form(...), From: str = Form(...), MediaUrl0: str = F
 
                 send_message(From, initial_message)
             else:
-                #send_message(From, f"""Hello! Welcome to the Utopia Network survey. Thank you for agreeing to participate. We want to assure you that none of the data you provide will be able to be directly linked back to you. Your identity is protected through secure and encrypted links. How would you like to be addressed during this session (please feel free to use your own name, or another name).""")
-                #send_message(From, f"""Thank you for agreeing to participate. We want to assure you that none of the data you provide will be able to be directly linked back to you. Your identity is protected through secure and encrypted links. How would you like to be addressed during this session? (Please feel free to use your own name, or another name.)""")
                 default_initial_message = """Thank you for agreeing to participate. We want to assure you that none of the data you provide will be directly linked back to you. Your identity is protected through secure and encrypted links. How would you like to be addressed during this session? (Please feel free to use your own name, or another name.)"""
 
-                default_completion_message = """Congratulations, you’ve completed the survey! Thank you so much for taking the time to share your experiences. Your input will help Utopia Network Kenya create programs and advocate for meaningful change. If you have any questions, concerns, or feedback, please don’t hesitate to contact us. Your voice matters, and we deeply appreciate your participation."""
+                default_completion_message = """Congratulations, you’ve completed the survey! xxx"""
 
                 event_info_ref = db.collection(f'AOI_{current_event_id}').document('info')
                 event_info_doc = event_info_ref.get()
@@ -1113,9 +1105,8 @@ async def reply(Body: str = Form(...), From: str = Form(...), MediaUrl0: str = F
     # Check if user wants to end the survey early
     if Body.strip().lower() in ['finalize', 'finish']:
         # User wants to end the survey early
-        #send_message(From, "Congratulations, you’ve completed the survey! Thank you so much for taking the time to share your experiences. Your input will help Utopia Network Kenya create programs and advocate for meaningful change. If you have any questions, concerns, or feedback, please don’t hesitate to contact us. Your voice matters, and we deeply appreciate your participation.")
         # Optionally, set survey_complete flag
-        default_completion_message = """Congratulations, you’ve completed the survey! Thank you so much for taking the time to share your experiences. Your input will help Utopia Network Kenya create programs and advocate for meaningful change. If you have any questions, concerns, or feedback, please don’t hesitate to contact us. Your voice matters, and we deeply appreciate your participation."""
+        default_completion_message = """Congratulations, you’ve completed the survey! xxx"""
 
 
         # Fetch 'completion_message' from Firebase
@@ -1209,8 +1200,7 @@ async def reply(Body: str = Form(...), From: str = Form(...), MediaUrl0: str = F
     else:
         # All questions have been asked
         # Send completion message
-        #send_message(From, "Congratulations, you’ve completed the survey! Thank you so much for taking the time to share your experiences. Your input will help Utopia Network Kenya create programs and advocate for meaningful change. If you have any questions, concerns, or feedback, please don’t hesitate to contact us. Your voice matters, and we deeply appreciate your participation.")
-        default_completion_message = """Congratulations, you’ve completed the survey! Thank you so much for taking the time to share your experiences. Your input will help Utopia Network Kenya create programs and advocate for meaningful change. If you have any questions, concerns, or feedback, please don’t hesitate to contact us. Your voice matters, and we deeply appreciate your participation."""
+        default_completion_message = """Congratulations, you’ve completed the survey!xxx"""
 
 
         # Fetch 'completion_message' from Firebase
