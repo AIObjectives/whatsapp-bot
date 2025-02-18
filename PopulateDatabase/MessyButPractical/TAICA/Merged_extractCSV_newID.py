@@ -1,19 +1,14 @@
-### IF THE UI DOESNT WORK or any reason:
-# then simply run the code below to get the csv file locally
-
-
-
-# always check 2 things- collection name and db credentials
+# always check 2 things - collection name and db credentials
 
 import csv
 from io import StringIO
 import firebase_admin
 from firebase_admin import credentials, firestore
+import pandas as pd  # Added for merging CSVs
 
 def get_all_user_inputs(db, collection_name):
     """
-    Fetch all user messages (excluding bot responses) across documents in the collection,
-    and any additional fields. This is based on your original code.
+    Fetch all user messages (excluding bot responses) across documents in the collection.
     """
     try:
         collection_data = db.collection(collection_name).stream()
@@ -45,6 +40,7 @@ def get_all_user_inputs(db, collection_name):
             all_messages[phone_number] = {
                 'name': name,
                 'comment-body': cleaned_messages,
+                'collection': collection_name,  # Track which collection the data came from
                 **other_fields  # Merge any additional fields dynamically
             }
         return all_messages
@@ -52,51 +48,52 @@ def get_all_user_inputs(db, collection_name):
         print(f"An error occurred: {e}")
         return {}
 
-def generate_dynamic_csv(all_messages):
+def generate_dynamic_csv(all_messages, output_filename):
     """
-    Generate CSV content dynamically from all fields in user messages.
-    Returns the CSV content as a string.
+    Generate and save CSV dynamically from all fields in user messages.
     """
-    output = StringIO()
+    if not all_messages:
+        print(f"No data found for {output_filename}, skipping CSV generation.")
+        return None
+
     all_keys = set()
 
     # Collect all unique keys across documents
-    for phone_number, doc_data in all_messages.items():
+    for doc_data in all_messages.values():
         all_keys.update(doc_data.keys())
 
     # Write headers (sorted for consistency)
-    writer = csv.writer(output)
     headers = ['comment-id'] + sorted(all_keys)
-    writer.writerow(headers)
-
-    # Write each row
+    
+    # Write CSV content
+    csv_data = []
     index = 1
     for phone_number, doc_data in all_messages.items():
         row = [index]  # Start with comment-id
         row += [doc_data.get(key, '') for key in sorted(all_keys)]
-        writer.writerow(row)
+        csv_data.append(row)
         index += 1
 
-    return output.getvalue()
+    # Save CSV locally
+    df = pd.DataFrame(csv_data, columns=headers)
+    df.to_csv(output_filename, index=False, encoding="utf-8")
+    
+    print(f"CSV saved as: {output_filename}")
+    return df  # Return DataFrame for merging later
 
 def main():
     """
     Main function to:
     1. Initialize Firebase Admin SDK with local credentials.
     2. Retrieve documents from specified collections.
-    3. Generate and save CSV files locally.
+    3. Generate individual CSVs & merge them into one big CSV.
     """
     # === 1. Initialize Firebase with your credentials ===
-    # Replace with the path to your actual credentials JSON file
-    cred = credentials.Certificate('xxx.json')
-
-
-
+    cred = credentials.Certificate('...xxx.json')
     firebase_admin.initialize_app(cred)
-    
     db = firestore.client()
 
-    # === 2. Specify which collections to download ===
+    # === 2. Specify collections to download ===
     collection_names = [
         #"Week1_TAICA_COPY",
         #"Week2_TAICA_COPY",
@@ -105,20 +102,26 @@ def main():
         "AOI_5_TAICA_5"
     ]
 
-    # === 3. For each collection, generate CSV and save locally ===
+    # Store all dataframes for merging
+    all_dfs = []
+
+    # === 3. Fetch data & save CSVs ===
     for collection_name in collection_names:
         print(f"Fetching data from collection: {collection_name}")
         all_messages = get_all_user_inputs(db, collection_name)
         
-        # Generate CSV content
-        csv_content = generate_dynamic_csv(all_messages)
-        
-        # Save to local file
-        output_filename = f"{collection_name}.csv"
-        with open(output_filename, "w", encoding="utf-8", newline="") as f:
-            f.write(csv_content)
-        
-        print(f"CSV saved as: {output_filename}")
+        # Generate CSV & collect for merging
+        csv_filename = f"{collection_name}.csv"
+        df = generate_dynamic_csv(all_messages, csv_filename)
+        if df is not None:
+            all_dfs.append(df)
+
+    # === 4. Merge all CSVs into one final file ===
+    if all_dfs:
+        merged_df = pd.concat(all_dfs, ignore_index=True)
+        merged_filename = "Merged_All_Collections.csv"
+        merged_df.to_csv(merged_filename, index=False, encoding="utf-8")
+        print(f"✅ Merged CSV saved as: {merged_filename}")
 
 if __name__ == "__main__":
     main()

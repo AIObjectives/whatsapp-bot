@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Waiting Game</title>
+    <!-- Load React and ReactDOM from CDN -->
+    <script
+      crossorigin
+      src="https://unpkg.com/react@18/umd/react.development.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"
+    ></script>
+    <!-- Load Babel for JSX transformation in the browser -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+      /* Basic reset and styling */
+      body {
+        margin: 0;
+        font-family: sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <!-- Our React code -->
+    <script type="text/babel">
+      const { useState, useEffect } = React;
+
+      // A simple waiting game component
+      function WaitingGame() {
+        const [score, setScore] = useState(0);
+        const [position, setPosition] = useState({ top: 50, left: 50 });
+
+        // Update the target's position every second
+        useEffect(() => {
+          const interval = setInterval(() => {
+            setPosition({
+              top: Math.random() * 80 + 10, // Keep within 10%-90% of viewport
+              left: Math.random() * 80 + 10,
+            });
+          }, 1000);
+          return () => clearInterval(interval);
+        }, []);
+
+        // Increase score when the target is clicked
+        const handleClick = () => {
+          setScore((prev) => prev + 1);
+        };
+
+        return (
+          <div
+            style={{
+              position: "relative",
+              height: "100vh",
+              textAlign: "center",
+              paddingTop: "2rem",
+              background: "#f5f5f5",
+            }}
+          >
+            <h2>Your report is being generated!</h2>
+            <p>While you wait, try to score as high as you can!</p>
+            <p>
+              <strong>Score: {score}</strong>
+            </p>
+            <div
+              onClick={handleClick}
+              style={{
+                position: "absolute",
+                top: position.top + "%",
+                left: position.left + "%",
+                width: "50px",
+                height: "50px",
+                backgroundColor: "salmon",
+                borderRadius: "50%",
+                cursor: "pointer",
+              }}
+            ></div>
+            <p style={{ marginTop: "2rem", color: "#555" }}>
+              (Refresh the page to restart the game)
+            </p>
+          </div>
+        );
+      }
+
+      // Render the game into the root element
+      ReactDOM.createRoot(document.getElementById("root")).render(<WaitingGame />);
+    </script>
+  </body>
+</html>
