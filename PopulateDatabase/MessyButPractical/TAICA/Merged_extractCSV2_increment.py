@@ -223,16 +223,16 @@ def main():
     3. Generate individual CSVs & merge them into one big CSV.
     """
     # === 1. Initialize Firebase with your credentials ===
-    cred = credentials.Certificate('xxx.json')
+    cred = credentials.Certificate('xx.json')
     firebase_admin.initialize_app(cred)
     db = firestore.client()
 
     # === 2. Specify collections to download ===
     collection_names = [
-        #"Week1_TAICA_COPY",
-        #"Week2_TAICA_COPY",
+        "AOI_1_TAICA_1",
+        "AOI_2_TAICA_2",
         "AOI_3_TAICA_3",
-        #"Week4_TAICA_COPY",
+        "AOI_4_TAICA_4",
         "AOI_5_TAICA_5"
     ]
 
@@ -254,7 +254,7 @@ def main():
     # === 4. Merge all CSVs into one final file ===
     if all_dfs:
         merged_df = pd.concat(all_dfs, ignore_index=True)
-        merged_filename = "Merged_All_Collections_increment.csv"
+        merged_filename = "Merged_All_Collections_incrementweek1.csv"
         merged_df.to_csv(merged_filename, index=False, encoding="utf-8")
         print(f"✅ Merged CSV saved as: {merged_filename}")
 
